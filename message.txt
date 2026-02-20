@@ -31,7 +31,7 @@ local Features = {
 
 -- Jump Boost Variablen
 local jumpPowerValue = 100
-local jumpSliderDragging = false
+--local jumpSliderDragging = false
 
 -- Fly Variablen
 local flying = false
@@ -39,7 +39,7 @@ local flySpeed = 100
 local flyConnection = nil
 local flyBodyVelocity = nil
 local flyBodyGyro = nil
-local flySliderDragging = false
+--local flySliderDragging = false
 
 -- ===========================================
 -- VIP BYPASS (OPTIMIERT)
@@ -550,7 +550,7 @@ statusText.TextXAlignment = Enum.TextXAlignment.Left
 -- ===========================================
 -- SLIDER FUNKTION
 -- ===========================================
-local function createSlider(parent, name, value, min, max, yPos, callback)
+--local function createSlider(parent, name, value, min, max, yPos, callback)
     local frame = Instance.new("Frame")
     frame.Parent = parent
     frame.BackgroundColor3 = colors.medium
@@ -584,32 +584,32 @@ local function createSlider(parent, name, value, min, max, yPos, callback)
     valueLabel.TextSize = 16
     valueLabel.TextXAlignment = Enum.TextXAlignment.Right
     
-    local sliderBg = Instance.new("Frame")
-    sliderBg.Parent = frame
-    sliderBg.BackgroundColor3 = colors.light
-    sliderBg.Size = UDim2.new(0, 400, 0, 4)
-    sliderBg.Position = UDim2.new(0, 15, 0, 35)
-    sliderBg.BorderSizePixel = 0
+   -- local sliderBg = Instance.new("Frame")
+   -- sliderBg.Parent = frame
+    --sliderBg.BackgroundColor3 = colors.light
+   -- sliderBg.Size = UDim2.new(0, 400, 0, 4)
+   -- sliderBg.Position = UDim2.new(0, 15, 0, 35)
+   -- sliderBg.BorderSizePixel = 0
     
-    local sliderBgCorner = Instance.new("UICorner")
-    sliderBgCorner.CornerRadius = UDim.new(1, 0)
-    sliderBgCorner.Parent = sliderBg
+    --local sliderBgCorner = Instance.new("UICorner")
+    --sliderBgCorner.CornerRadius = UDim.new(1, 0)
+   -- sliderBgCorner.Parent = sliderBg
     
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Parent = sliderBg
-    sliderButton.BackgroundColor3 = colors.tabRed
-    sliderButton.Size = UDim2.new(0, 16, 0, 16)
-    sliderButton.Position = UDim2.new((value - min) / (max - min), -8, 0.5, -8)
-    sliderButton.Text = ""
-    sliderButton.BorderSizePixel = 0
+   -- local sliderButton = Instance.new("TextButton")
+   -- sliderButton.Parent = sliderBg
+   -- sliderButton.BackgroundColor3 = colors.tabRed
+   -- sliderButton.Size = UDim2.new(0, 16, 0, 16)
+   -- sliderButton.Position = UDim2.new((value - min) / (max - min), -8, 0.5, -8)
+   -- sliderButton.Text = ""
+   -- sliderButton.BorderSizePixel = 0
     
-    local sliderBtnCorner = Instance.new("UICorner")
-    sliderBtnCorner.CornerRadius = UDim.new(1, 0)
-    sliderBtnCorner.Parent = sliderButton
+   -- local sliderBtnCorner = Instance.new("UICorner")
+   -- sliderBtnCorner.CornerRadius = UDim.new(1, 0)
+   -- sliderBtnCorner.Parent = sliderButton
     
-    local dragging = false
+   -- local dragging = false
     
-    sliderButton.MouseButton1Down:Connect(function()
+    --sliderButton.MouseButton1Down:Connect(function()
         dragging = true
     end)
     
@@ -622,17 +622,17 @@ local function createSlider(parent, name, value, min, max, yPos, callback)
     uis.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local mousePos = uis:GetMouseLocation()
-            local sliderPos = sliderBg.AbsolutePosition.X
-            local sliderSize = sliderBg.AbsoluteSize.X
+         --   local sliderPos = sliderBg.AbsolutePosition.X
+         --   local sliderSize = sliderBg.AbsoluteSize.X
             
-            local relativeX = math.clamp(mousePos.X - sliderPos, 0, sliderSize)
-            local percent = relativeX / sliderSize
+         --   local relativeX = math.clamp(mousePos.X - sliderPos, 0, sliderSize)
+           -- local percent = relativeX / sliderSize
             
             local newValue = math.floor(min + (percent * (max - min)))
             value = newValue
             label.Text = name .. ": " .. newValue
             valueLabel.Text = newValue
-            sliderButton.Position = UDim2.new(percent, -8, 0.5, -8)
+          --  sliderButton.Position = UDim2.new(percent, -8, 0.5, -8)
             
             callback(newValue)
         end
@@ -683,9 +683,9 @@ local function switchTab(tabName)
         contentY = contentY + 50
         
         -- Jump Power Slider
-        createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, contentY, function(value)
-            jumpPowerValue = value
-        end)
+       -- createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, contentY, function(value)
+        --    jumpPowerValue = value
+       -- end)
         
         contentY = contentY + 70
         
@@ -840,9 +840,9 @@ local function switchTab(tabName)
         contentY = contentY + 50
         
         -- Fly Speed Slider
-        createSlider(contentContainer, "Fly Speed", flySpeed, 10, 1000, contentY, function(value)
-            flySpeed = value
-        end)
+      --  createSlider(contentContainer, "Fly Speed", flySpeed, 10, 1000, contentY, function(value)
+         --   flySpeed = value
+       -- end)
         
         contentY = contentY + 70
         
