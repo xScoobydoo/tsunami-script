@@ -12,7 +12,11 @@ local validKeys = {
     ["OXRP09-TEST-2024"] = true,
     ["OXRP09-ABCD-1234"] = true,
     ["OXRP09-WELCOME"] = true,
-    
+    ["OXRP09-FY0O-65S9"] = true,
+
+
+
+
     -- Platz für Bot-Keys:
     -- ["OXRP09-XXXX-XXXX"] = true,  ← Hier neue Keys eintragen!
     -- ["OXRP09-YYYY-YYYY"] = true,
@@ -934,4 +938,5 @@ end
 -- ===========================================
 -- START
 -- ===========================================
+
 checkKeyWithBot()
