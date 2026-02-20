@@ -663,10 +663,10 @@ local function startOXRP09()
         yPos = yPos + 50
  
         -- Jump Power Slider
-        local sliderFrame = createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, yPos, function(v)
-            jumpPowerValue = v
-        end)
-        yPos = yPos + 70
+       -- local sliderFrame = createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, yPos, function(v)
+      --      jumpPowerValue = v
+      --  end)
+      --  yPos = yPos + 70
  
         -- Infinity Jump Toggle
         local infBtn = Instance.new("TextButton")
@@ -777,4 +777,5 @@ end
 -- ===========================================
 
 checkKeyWithBot()
+
 
