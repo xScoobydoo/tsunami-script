@@ -1,0 +1,937 @@
+--[[
+    OXRP09 - ULTIMATIVE FIXED VERSION
+    Keys werden direkt vom Bot übernommen
+]]
+
+-- ===========================================
+-- KEYS (DIREKT VOM BOT - DU MUSST SIE EINTRAGEN!)
+-- ===========================================
+local validKeys = {
+    -- Hier kommen ALLE Keys die der Bot generiert
+    -- Wenn ein neuer Key generiert wird, musst du ihn hier eintragen!
+    ["OXRP09-TEST-2024"] = true,
+    ["OXRP09-ABCD-1234"] = true,
+    ["OXRP09-WELCOME"] = true,
+    
+    -- Platz für Bot-Keys:
+    -- ["OXRP09-XXXX-XXXX"] = true,  ← Hier neue Keys eintragen!
+    -- ["OXRP09-YYYY-YYYY"] = true,
+    -- ["OXRP09-FY0O-65S9"] = true,
+}
+
+print("📊 " .. #validKeys .. " Keys geladen!")
+
+-- ===========================================
+-- KEY-AUTHENTIFIZIERUNG
+-- ===========================================
+ 
+local function checkKeyWithBot()
+    local keyGui = Instance.new("ScreenGui")
+    local keyFrame = Instance.new("Frame")
+    local keyTitle = Instance.new("TextLabel")
+    local keySubtitle = Instance.new("TextLabel")
+    local keyInput = Instance.new("TextBox")
+    local keyButton = Instance.new("TextButton")
+    local keyStatus = Instance.new("TextLabel")
+    local discordBtn = Instance.new("TextButton")
+ 
+    keyGui.Name = "OXRP09_KeyAuth"
+    keyGui.Parent = game.CoreGui
+    keyGui.Enabled = true
+    keyGui.ResetOnSpawn = false
+ 
+    -- Hauptframe
+    keyFrame.Parent = keyGui
+    keyFrame.BackgroundColor3 = Color3.fromRGB(15,15,20)
+    keyFrame.BorderSizePixel = 0
+    keyFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
+    keyFrame.Size = UDim2.new(0, 400, 0, 350)
+    keyFrame.Active = true
+    keyFrame.Draggable = true
+ 
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 16)
+    frameCorner.Parent = keyFrame
+ 
+    -- Title
+    keyTitle.Parent = keyFrame
+    keyTitle.BackgroundTransparency = 1
+    keyTitle.Size = UDim2.new(1, 0, 0, 50)
+    keyTitle.Position = UDim2.new(0, 0, 0, 20)
+    keyTitle.Text = "OXRP09"
+    keyTitle.TextColor3 = Color3.fromRGB(0,255,100)
+    keyTitle.Font = Enum.Font.GothamBold
+    keyTitle.TextSize = 36
+ 
+    -- Subtitle
+    keySubtitle.Parent = keyFrame
+    keySubtitle.BackgroundTransparency = 1
+    keySubtitle.Size = UDim2.new(1, 0, 0, 30)
+    keySubtitle.Position = UDim2.new(0, 0, 0, 70)
+    keySubtitle.Text = "KEY AUTHENTIFIZIERUNG"
+    keySubtitle.TextColor3 = Color3.fromRGB(180,180,180)
+    keySubtitle.Font = Enum.Font.Gotham
+    keySubtitle.TextSize = 16
+ 
+    -- Discord Button
+    discordBtn.Parent = keyFrame
+    discordBtn.BackgroundColor3 = Color3.fromRGB(88,101,242)
+    discordBtn.BorderSizePixel = 0
+    discordBtn.Size = UDim2.new(0, 340, 0, 45)
+    discordBtn.Position = UDim2.new(0.5, -170, 0, 120)
+    discordBtn.Text = "🔗 DISCORD BEITRETEN (KEY HOLEN)"
+    discordBtn.TextColor3 = Color3.new(1,1,1)
+    discordBtn.Font = Enum.Font.GothamBold
+    discordBtn.TextSize = 14
+ 
+    local discordCorner = Instance.new("UICorner")
+    discordCorner.CornerRadius = UDim.new(0, 8)
+    discordCorner.Parent = discordBtn
+ 
+    discordBtn.MouseButton1Click:Connect(function()
+        pcall(function()
+            setclipboard("https://discord.gg/GyTa9QWP")
+        end)
+        keyStatus.Text = "✅ Discord Link kopiert! Tritt bei und schreibe !key"
+        keyStatus.TextColor3 = Color3.fromRGB(0,255,0)
+    end)
+ 
+    -- Key Input
+    keyInput.Parent = keyFrame
+    keyInput.BackgroundColor3 = Color3.fromRGB(30,30,35)
+    keyInput.BorderSizePixel = 0
+    keyInput.Size = UDim2.new(0, 340, 0, 45)
+    keyInput.Position = UDim2.new(0.5, -170, 0, 180)
+    keyInput.PlaceholderText = "KEY EINGEBEN"
+    keyInput.Text = ""
+    keyInput.TextColor3 = Color3.new(1,1,1)
+    keyInput.Font = Enum.Font.Gotham
+    keyInput.TextSize = 16
+ 
+    local inputCorner = Instance.new("UICorner")
+    inputCorner.CornerRadius = UDim.new(0, 8)
+    inputCorner.Parent = keyInput
+ 
+    -- Unlock Button
+    keyButton.Parent = keyFrame
+    keyButton.BackgroundColor3 = Color3.fromRGB(0,200,0)
+    keyButton.BorderSizePixel = 0
+    keyButton.Size = UDim2.new(0, 340, 0, 45)
+    keyButton.Position = UDim2.new(0.5, -170, 0, 240)
+    keyButton.Text = "🔓 UNLOCK"
+    keyButton.TextColor3 = Color3.new(1,1,1)
+    keyButton.Font = Enum.Font.GothamBold
+    keyButton.TextSize = 18
+ 
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = keyButton
+ 
+    -- Status
+    keyStatus.Parent = keyFrame
+    keyStatus.BackgroundTransparency = 1
+    keyStatus.Size = UDim2.new(1, 0, 0, 30)
+    keyStatus.Position = UDim2.new(0, 0, 0, 300)
+    keyStatus.Text = "⬆️ Hol dir einen Key auf Discord ⬆️"
+    keyStatus.TextColor3 = Color3.fromRGB(180,180,180)
+    keyStatus.Font = Enum.Font.Gotham
+    keyStatus.TextSize = 12
+ 
+    -- Key Überprüfung
+    keyButton.MouseButton1Click:Connect(function()
+        local userKey = keyInput.Text
+ 
+        if validKeys[userKey] then
+            keyStatus.Text = "✅ KEY AKZEPTIERT! LADE OXRP09..."
+            keyStatus.TextColor3 = Color3.fromRGB(0,255,0)
+            wait(1)
+            keyGui:Destroy()
+            startOXRP09()
+        else
+            keyStatus.Text = "❌ UNGÜLTIGER KEY! Hol dir einen auf Discord: !key"
+            keyStatus.TextColor3 = Color3.fromRGB(255,0,0)
+            keyInput.Text = ""
+        end
+    end)
+ 
+    while keyGui.Parent do
+        task.wait()
+    end
+ 
+-- ===========================================
+-- OXRP09 SCRIPT
+-- ===========================================
+local function startOXRP09()
+    -- ===========================================
+    -- OXRP09 - ZERO LAG EDITION
+    -- ===========================================
+ 
+    local player = game:GetService("Players").LocalPlayer
+    local uis = game:GetService("UserInputService")
+    local runService = game:GetService("RunService")
+    local tweenService = game:GetService("TweenService")
+    local workspace = game:GetService("Workspace")
+ 
+    -- STANDARD KEYBINDS
+    local Keybinds = {
+        Menu = Enum.KeyCode.F4,
+        SafeZone = Enum.KeyCode.Q,
+        Killswitch = Enum.KeyCode.F6,
+        Fly = Enum.KeyCode.F
+    }
+ 
+    -- Aktive Features
+    local Features = {
+        InstantPickup = false,
+        VIPBypass = true,
+        AntiRagdoll = true,
+        JumpBoost = false,
+        Fly = false,
+        InfinityJump = false
+    }
+ 
+    -- Jump Boost Variablen
+    local jumpPowerValue = 100
+ 
+    -- Fly Variablen
+    local flying = false
+    local flySpeed = 100
+    local flyConnection = nil
+    local flyBodyVelocity = nil
+    local flyBodyGyro = nil
+ 
+    -- VIP BYPASS
+    local vipCache = {}
+    local lastVIPScan = 0
+    local vipScanInterval = 5
+ 
+    local function bypassAllVIP()
+        local now = tick()
+        if now - lastVIPScan < vipScanInterval then return end
+        lastVIPScan = now
+ 
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and not vipCache[obj] then
+                local nameLower = string.lower(obj.Name)
+                local parentName = obj.Parent and string.lower(obj.Parent.Name) or ""
+ 
+                if string.find(nameLower, "vip") or string.find(parentName, "vip") then
+                    obj.CanCollide = false
+                    obj.Transparency = 0.5
+                    vipCache[obj] = true
+                end
+            end
+        end
+    end
+ 
+    task.spawn(function()
+        while Features.VIPBypass do
+            pcall(bypassAllVIP)
+            task.wait(vipScanInterval)
+        end
+    end)
+ 
+    -- SAFE ZONE TELEPORT
+    local FlyConn = nil
+    local IsFlying = false
+    local NoclipConn = nil
+ 
+    local TARGET_POS = Vector3.new(110.0, 3.2 + 5, 150.7)
+    local TARGET_CFRAME = CFrame.lookAt(TARGET_POS, TARGET_POS + Vector3.new(1, 0, 0))
+ 
+    local function enableNoclip()
+        if NoclipConn then return end
+        local function noCollide()
+            local char = player.Character
+            if not char then return end
+            for _, part in char:GetDescendants() do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+        NoclipConn = runService.Stepped:Connect(noCollide)
+    end
+ 
+    local function disableNoclip()
+        if NoclipConn then
+            NoclipConn:Disconnect()
+            NoclipConn = nil
+        end
+        local char = player.Character
+        if char then
+            for _, part in char:GetDescendants() do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+ 
+    local function stopFly()
+        IsFlying = false
+        if FlyConn then
+            FlyConn:Disconnect()
+            FlyConn = nil
+        end
+        disableNoclip()
+        local char = player.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.PlatformStand = false
+            end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+            end
+        end
+    end
+ 
+    local function flyToCoords()
+        if IsFlying then
+            stopFly()
+            task.wait(0.1)
+        end
+ 
+        local char = player.Character
+        if not char then return end
+ 
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum then return end
+ 
+        hum.PlatformStand = true
+        local oldWalk = hum.WalkSpeed
+        local oldJump = hum.JumpPower
+        hum.WalkSpeed = 16
+        hum.JumpPower = 50
+ 
+        enableNoclip()
+        IsFlying = true
+ 
+        local dist = (hrp.Position - TARGET_POS).Magnitude
+        if dist < 40 then
+            disableNoclip()
+            hrp.CFrame = TARGET_CFRAME
+            task.wait(0.15)
+            stopFly()
+            hum.WalkSpeed = oldWalk
+            hum.JumpPower = oldJump
+            return
+        end
+ 
+        local startPos = hrp.Position
+        local rightOutPos = startPos + (hrp.CFrame.RightVector * 150) + Vector3.new(0, 35, 0)
+        local rightOutCFrame = CFrame.lookAt(rightOutPos, rightOutPos + hrp.CFrame.RightVector)
+ 
+        local phase = 1
+        local phaseTime = 0
+ 
+        FlyConn = runService.RenderStepped:Connect(function(dt)
+            if not IsFlying or not hrp.Parent then return end
+ 
+            phaseTime = phaseTime + dt
+ 
+            if phase == 1 then
+                local alpha = math.min(phaseTime / 1.5, 1)
+                hrp.CFrame = hrp.CFrame:Lerp(rightOutCFrame, alpha)
+ 
+                if alpha >= 0.999 then
+                    phase = 2
+                    phaseTime = 0
+                    disableNoclip()
+                end
+            elseif phase == 2 then
+                local alpha2 = math.min(phaseTime / 1.5, 1)
+                hrp.CFrame = rightOutCFrame:Lerp(TARGET_CFRAME, alpha2)
+ 
+                if alpha2 >= 0.999 then
+                    hrp.CFrame = TARGET_CFRAME
+                    hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+                    IsFlying = false
+                    if FlyConn then
+                        FlyConn:Disconnect()
+                        FlyConn = nil
+                    end
+                    task.wait(0.1)
+                    stopFly()
+                    hum.WalkSpeed = oldWalk
+                    hum.JumpPower = oldJump
+                    return
+                end
+            end
+        end)
+    end
+ 
+    -- FLY FUNKTION
+    local function startFly()
+        if not player.Character then return end
+ 
+        local root = player.Character:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+ 
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.PlatformStand = true
+        end
+ 
+        flyBodyVelocity = Instance.new("BodyVelocity")
+        flyBodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        flyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        flyBodyVelocity.Parent = root
+ 
+        flyBodyGyro = Instance.new("BodyGyro")
+        flyBodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        flyBodyGyro.P = 1e4
+        flyBodyGyro.Parent = root
+ 
+        flying = true
+ 
+        flyConnection = runService.Heartbeat:Connect(function()
+            if not player.Character or not root then return end
+ 
+            local moveDirection = Vector3.new(0, 0, 0)
+            local speed = flySpeed
+ 
+            if uis:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + (root.CFrame.LookVector * speed)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - (root.CFrame.LookVector * speed)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - (root.CFrame.RightVector * speed)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + (root.CFrame.RightVector * speed)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.Space) then
+                moveDirection = moveDirection + Vector3.new(0, speed, 0)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveDirection = moveDirection - Vector3.new(0, speed, 0)
+            end
+            if uis:IsKeyDown(Enum.KeyCode.LeftShift) then
+                moveDirection = moveDirection * 5
+            end
+ 
+            flyBodyVelocity.Velocity = moveDirection
+            flyBodyGyro.CFrame = root.CFrame
+        end)
+    end
+ 
+    local function stopFly()
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        if flyBodyVelocity then
+            flyBodyVelocity:Destroy()
+            flyBodyVelocity = nil
+        end
+        if flyBodyGyro then
+            flyBodyGyro:Destroy()
+            flyBodyGyro = nil
+        end
+ 
+        if player.Character then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.PlatformStand = false
+            end
+        end
+ 
+        flying = false
+    end
+ 
+    local function toggleFly()
+        Features.Fly = not Features.Fly
+        if Features.Fly then
+            startFly()
+        else
+            stopFly()
+        end
+    end
+ 
+    -- JUMP BOOST
+    runService.Heartbeat:Connect(function()
+        if Features.JumpBoost and player.Character then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.UseJumpPower = true
+                humanoid.JumpPower = jumpPowerValue
+            end
+        end
+    end)
+ 
+    -- INFINITY JUMP
+    uis.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.Space and Features.InfinityJump then
+            if player.Character then
+                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState("Jumping")
+                end
+            end
+        end
+    end)
+ 
+    -- KILLSWITCH
+    local killswitchActive = false
+ 
+    local function killswitch()
+        if killswitchActive then return end
+        killswitchActive = true
+ 
+        local gui = game.CoreGui:FindFirstChild("OXRP09")
+        if gui then gui:Destroy() end
+ 
+        if player.Character then
+            local hum = player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.WalkSpeed = 16
+                hum.JumpPower = 50
+                hum.PlatformStand = false
+            end
+        end
+ 
+        if flying then stopFly() end
+ 
+        script:Destroy()
+    end
+ 
+    -- ANTI RAGDOLL
+    local StateConn = nil
+ 
+    local function disableRagdollStates(hum)
+        if not hum then return end
+        hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+        hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+        hum:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+        hum.PlatformStand = false
+    end
+ 
+    local function onCharacterAdded(char)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum then
+            disableRagdollStates(hum)
+ 
+            if StateConn then StateConn:Disconnect() end
+            StateConn = hum.StateChanged:Connect(function(old, new)
+                if Features.AntiRagdoll and (new == Enum.HumanoidStateType.Ragdoll or 
+                                new == Enum.HumanoidStateType.FallingDown or 
+                                new == Enum.HumanoidStateType.Physics) then
+                    hum:ChangeState(Enum.HumanoidStateType.Running)
+                    hum.PlatformStand = false
+                end
+            end)
+        end
+    end
+ 
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+    player.CharacterAdded:Connect(onCharacterAdded)
+ 
+    -- INSTANT PICKUP
+    local function refreshInstantPickup()
+        if not Features.InstantPickup then return end
+        for _, obj in pairs(game:GetDescendants()) do
+            if obj:IsA("ProximityPrompt") then
+                obj.HoldDuration = 0
+            end
+        end
+    end
+ 
+    game.DescendantAdded:Connect(function(obj)
+        if Features.InstantPickup and obj:IsA("ProximityPrompt") then
+            obj.HoldDuration = 0
+        end
+    end)
+ 
+    -- GUI MIT SLIDERN
+    local screenGui = Instance.new("ScreenGui")
+    local mainFrame = Instance.new("Frame")
+    local minimizeBtn = Instance.new("TextButton")
+    local title = Instance.new("TextLabel")
+    local tabContainer = Instance.new("Frame")
+    local contentContainer = Instance.new("ScrollingFrame")
+    local activeTab = "Movement"
+    local isMinimized = false
+ 
+    local colors = {
+        bg = Color3.fromRGB(10, 10, 15),
+        dark = Color3.fromRGB(20, 20, 25),
+        medium = Color3.fromRGB(30, 30, 35),
+        light = Color3.fromRGB(40, 40, 45),
+        tabRed = Color3.fromRGB(255, 80, 80),
+        titleBlue = Color3.fromRGB(80, 150, 255),
+        tiktok = Color3.fromRGB(255, 0, 100),
+        text = Color3.fromRGB(255, 255, 255),
+        textDim = Color3.fromRGB(180, 180, 180)
+    }
+ 
+    screenGui.Name = "OXRP09"
+    screenGui.Parent = game.CoreGui
+    screenGui.Enabled = true
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ 
+    mainFrame.Parent = screenGui
+    mainFrame.BackgroundColor3 = colors.bg
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Position = UDim2.new(0.5, -350, 0.5, -250)
+    mainFrame.Size = UDim2.new(0, 700, 0, 500)
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    mainFrame.ClipsDescendants = true
+ 
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 8)
+    mainCorner.Parent = mainFrame
+ 
+    minimizeBtn.Parent = screenGui
+    minimizeBtn.BackgroundColor3 = colors.bg
+    minimizeBtn.BorderSizePixel = 0
+    minimizeBtn.Position = UDim2.new(0, 10, 0, 10)
+    minimizeBtn.Size = UDim2.new(0, 80, 0, 35)
+    minimizeBtn.Text = "OXRP09"
+    minimizeBtn.TextColor3 = colors.titleBlue
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.TextSize = 16
+    minimizeBtn.Visible = false
+    minimizeBtn.Draggable = true
+ 
+    local minCorner = Instance.new("UICorner")
+    minCorner.CornerRadius = UDim.new(0, 8)
+    minCorner.Parent = minimizeBtn
+ 
+    minimizeBtn.MouseButton1Click:Connect(function()
+        isMinimized = false
+        mainFrame.Visible = true
+        minimizeBtn.Visible = false
+    end)
+ 
+    title.Parent = mainFrame
+    title.BackgroundTransparency = 1
+    title.Size = UDim2.new(1, -100, 0, 50)
+    title.Position = UDim2.new(0, 20, 0, 5)
+    title.Text = "OXRP09"
+    title.TextColor3 = colors.titleBlue
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 28
+    title.TextXAlignment = Enum.TextXAlignment.Left
+ 
+    local minFrameBtn = Instance.new("TextButton")
+    minFrameBtn.Parent = mainFrame
+    minFrameBtn.BackgroundColor3 = colors.medium
+    minFrameBtn.BorderSizePixel = 0
+    minFrameBtn.Size = UDim2.new(0, 30, 0, 30)
+    minFrameBtn.Position = UDim2.new(1, -40, 0, 15)
+    minFrameBtn.Text = "−"
+    minFrameBtn.TextColor3 = colors.tabRed
+    minFrameBtn.Font = Enum.Font.GothamBold
+    minFrameBtn.TextSize = 20
+ 
+    local minFrameCorner = Instance.new("UICorner")
+    minFrameCorner.CornerRadius = UDim.new(0, 6)
+    minFrameCorner.Parent = minFrameBtn
+ 
+    minFrameBtn.MouseButton1Click:Connect(function()
+        isMinimized = true
+        mainFrame.Visible = false
+        minimizeBtn.Visible = true
+    end)
+ 
+    tabContainer.Parent = mainFrame
+    tabContainer.BackgroundColor3 = colors.dark
+    tabContainer.BorderSizePixel = 0
+    tabContainer.Position = UDim2.new(0, 20, 0, 60)
+    tabContainer.Size = UDim2.new(0, 150, 0, 400)
+ 
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 6)
+    tabCorner.Parent = tabContainer
+ 
+    contentContainer.Parent = mainFrame
+    contentContainer.BackgroundColor3 = colors.dark
+    contentContainer.BorderSizePixel = 0
+    contentContainer.Position = UDim2.new(0, 190, 0, 60)
+    contentContainer.Size = UDim2.new(0, 490, 0, 400)
+    contentContainer.CanvasSize = UDim2.new(0, 0, 0, 800)
+    contentContainer.ScrollBarThickness = 6
+    contentContainer.ScrollBarImageColor3 = colors.medium
+ 
+    local contentCorner = Instance.new("UICorner")
+    contentCorner.CornerRadius = UDim.new(0, 6)
+    contentCorner.Parent = contentContainer
+ 
+    local statusText = Instance.new("TextLabel")
+    statusText.Parent = mainFrame
+    statusText.BackgroundTransparency = 1
+    statusText.Size = UDim2.new(1, -20, 0, 20)
+    statusText.Position = UDim2.new(0, 10, 1, -25)
+    statusText.Text = "F4 = Menu | Q = Safe Zone | F = Fly"
+    statusText.TextColor3 = colors.textDim
+    statusText.Font = Enum.Font.Gotham
+    statusText.TextSize = 12
+    statusText.TextXAlignment = Enum.TextXAlignment.Left
+ 
+    -- SLIDER FUNKTION
+    local function createSlider(parent, name, value, min, max, yPos, callback)
+        local frame = Instance.new("Frame")
+        frame.Parent = parent
+        frame.BackgroundColor3 = colors.medium
+        frame.BorderSizePixel = 0
+        frame.Position = UDim2.new(0, 20, 0, yPos)
+        frame.Size = UDim2.new(0, 450, 0, 60)
+ 
+        local frameCorner = Instance.new("UICorner")
+        frameCorner.CornerRadius = UDim.new(0, 6)
+        frameCorner.Parent = frame
+ 
+        local label = Instance.new("TextLabel")
+        label.Parent = frame
+        label.BackgroundTransparency = 1
+        label.Size = UDim2.new(0, 200, 0, 20)
+        label.Position = UDim2.new(0, 15, 0, 5)
+        label.Text = name .. ": " .. value
+        label.TextColor3 = colors.text
+        label.Font = Enum.Font.Gotham
+        label.TextSize = 14
+        label.TextXAlignment = Enum.TextXAlignment.Left
+ 
+        local valueLabel = Instance.new("TextLabel")
+        valueLabel.Parent = frame
+        valueLabel.BackgroundTransparency = 1
+        valueLabel.Size = UDim2.new(0, 50, 0, 20)
+        valueLabel.Position = UDim2.new(1, -65, 0, 5)
+        valueLabel.Text = value
+        valueLabel.TextColor3 = colors.tabRed
+        valueLabel.Font = Enum.Font.GothamBold
+        valueLabel.TextSize = 16
+        valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+ 
+        local sliderBg = Instance.new("Frame")
+        sliderBg.Parent = frame
+        sliderBg.BackgroundColor3 = colors.light
+        sliderBg.Size = UDim2.new(0, 400, 0, 4)
+        sliderBg.Position = UDim2.new(0, 15, 0, 35)
+        sliderBg.BorderSizePixel = 0
+ 
+        local sliderBgCorner = Instance.new("UICorner")
+        sliderBgCorner.CornerRadius = UDim.new(1, 0)
+        sliderBgCorner.Parent = sliderBg
+ 
+        local sliderButton = Instance.new("TextButton")
+        sliderButton.Parent = sliderBg
+        sliderButton.BackgroundColor3 = colors.tabRed
+        sliderButton.Size = UDim2.new(0, 16, 0, 16)
+        sliderButton.Position = UDim2.new((value - min) / (max - min), -8, 0.5, -8)
+        sliderButton.Text = ""
+        sliderButton.BorderSizePixel = 0
+ 
+        local sliderBtnCorner = Instance.new("UICorner")
+        sliderBtnCorner.CornerRadius = UDim.new(1, 0)
+        sliderBtnCorner.Parent = sliderButton
+ 
+        local dragging = false
+ 
+        sliderButton.MouseButton1Down:Connect(function()
+            dragging = true
+        end)
+ 
+        uis.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+ 
+        uis.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local mousePos = uis:GetMouseLocation()
+                local sliderPos = sliderBg.AbsolutePosition.X
+                local sliderSize = sliderBg.AbsoluteSize.X
+ 
+                local relativeX = math.clamp(mousePos.X - sliderPos, 0, sliderSize)
+                local percent = relativeX / sliderSize
+ 
+                local newValue = math.floor(min + (percent * (max - min)))
+                callback(newValue)
+                label.Text = name .. ": " .. newValue
+                valueLabel.Text = newValue
+                sliderButton.Position = UDim2.new(percent, -8, 0.5, -8)
+            end
+        end)
+ 
+        return frame
+    end
+ 
+    -- TABS (EINFACH)
+    local function showSimpleGUI()
+        local yPos = 20
+        
+        -- Fly Toggle
+        local flyBtn = Instance.new("TextButton")
+        flyBtn.Parent = contentContainer
+        flyBtn.BackgroundColor3 = Features.Fly and colors.tabRed or colors.medium
+        flyBtn.BorderSizePixel = 0
+        flyBtn.Size = UDim2.new(0, 450, 0, 40)
+        flyBtn.Position = UDim2.new(0, 20, 0, yPos)
+        flyBtn.Text = "Fly Mode (F): " .. (Features.Fly and "ON" or "OFF")
+        flyBtn.TextColor3 = colors.text
+        flyBtn.Font = Enum.Font.Gotham
+        flyBtn.TextSize = 16
+ 
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        btnCorner.Parent = flyBtn
+ 
+        flyBtn.MouseButton1Click:Connect(function()
+            toggleFly()
+            flyBtn.Text = "Fly Mode (F): " .. (Features.Fly and "ON" or "OFF")
+            flyBtn.BackgroundColor3 = Features.Fly and colors.tabRed or colors.medium
+        end)
+ 
+        yPos = yPos + 50
+ 
+        -- Jump Boost Toggle
+        local jumpBtn = Instance.new("TextButton")
+        jumpBtn.Parent = contentContainer
+        jumpBtn.BackgroundColor3 = Features.JumpBoost and colors.tabRed or colors.medium
+        jumpBtn.BorderSizePixel = 0
+        jumpBtn.Size = UDim2.new(0, 450, 0, 40)
+        jumpBtn.Position = UDim2.new(0, 20, 0, yPos)
+        jumpBtn.Text = "Jump Boost: " .. (Features.JumpBoost and "ON" or "OFF")
+        jumpBtn.TextColor3 = colors.text
+        jumpBtn.Font = Enum.Font.Gotham
+        jumpBtn.TextSize = 16
+ 
+        local jumpCorner = Instance.new("UICorner")
+        jumpCorner.CornerRadius = UDim.new(0, 6)
+        jumpCorner.Parent = jumpBtn
+ 
+        jumpBtn.MouseButton1Click:Connect(function()
+            Features.JumpBoost = not Features.JumpBoost
+            jumpBtn.Text = "Jump Boost: " .. (Features.JumpBoost and "ON" or "OFF")
+            jumpBtn.BackgroundColor3 = Features.JumpBoost and colors.tabRed or colors.medium
+        end)
+ 
+        yPos = yPos + 50
+ 
+        -- Jump Power Slider
+        local sliderFrame = createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, yPos, function(v)
+            jumpPowerValue = v
+        end)
+        yPos = yPos + 70
+ 
+        -- Infinity Jump Toggle
+        local infBtn = Instance.new("TextButton")
+        infBtn.Parent = contentContainer
+        infBtn.BackgroundColor3 = Features.InfinityJump and colors.tabRed or colors.medium
+        infBtn.BorderSizePixel = 0
+        infBtn.Size = UDim2.new(0, 450, 0, 40)
+        infBtn.Position = UDim2.new(0, 20, 0, yPos)
+        infBtn.Text = "Infinity Jump: " .. (Features.InfinityJump and "ON" or "OFF")
+        infBtn.TextColor3 = colors.text
+        infBtn.Font = Enum.Font.Gotham
+        infBtn.TextSize = 16
+ 
+        local infCorner = Instance.new("UICorner")
+        infCorner.CornerRadius = UDim.new(0, 6)
+        infCorner.Parent = infBtn
+ 
+        infBtn.MouseButton1Click:Connect(function()
+            Features.InfinityJump = not Features.InfinityJump
+            infBtn.Text = "Infinity Jump: " .. (Features.InfinityJump and "ON" or "OFF")
+            infBtn.BackgroundColor3 = Features.InfinityJump and colors.tabRed or colors.medium
+        end)
+ 
+        yPos = yPos + 50
+ 
+        -- Safe Zone Button
+        local safeBtn = Instance.new("TextButton")
+        safeBtn.Parent = contentContainer
+        safeBtn.BackgroundColor3 = colors.blue
+        safeBtn.BorderSizePixel = 0
+        safeBtn.Size = UDim2.new(0, 450, 0, 40)
+        safeBtn.Position = UDim2.new(0, 20, 0, yPos)
+        safeBtn.Text = "Safe Zone (Q)"
+        safeBtn.TextColor3 = colors.text
+        safeBtn.Font = Enum.Font.Gotham
+        safeBtn.TextSize = 16
+ 
+        local safeCorner = Instance.new("UICorner")
+        safeCorner.CornerRadius = UDim.new(0, 6)
+        safeCorner.Parent = safeBtn
+ 
+        safeBtn.MouseButton1Click:Connect(function()
+            task.spawn(flyToCoords)
+        end)
+ 
+        yPos = yPos + 50
+ 
+        -- Killswitch
+        local killBtn = Instance.new("TextButton")
+        killBtn.Parent = contentContainer
+        killBtn.BackgroundColor3 = colors.red
+        killBtn.BorderSizePixel = 0
+        killBtn.Size = UDim2.new(0, 450, 0, 40)
+        killBtn.Position = UDim2.new(0, 20, 0, yPos)
+        killBtn.Text = "Killswitch (F6)"
+        killBtn.TextColor3 = colors.text
+        killBtn.Font = Enum.Font.Gotham
+        killBtn.TextSize = 16
+ 
+        local killCorner = Instance.new("UICorner")
+        killCorner.CornerRadius = UDim.new(0, 6)
+        killCorner.Parent = killBtn
+ 
+        killBtn.MouseButton1Click:Connect(function()
+            killswitch()
+        end)
+ 
+        yPos = yPos + 50
+        contentContainer.CanvasSize = UDim2.new(0, 0, 0, yPos + 20)
+    end
+ 
+    showSimpleGUI()
+ 
+    -- HOTKEY VERARBEITUNG
+    uis.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+ 
+        if input.KeyCode == Keybinds.Menu then
+            if isMinimized then
+                isMinimized = false
+                mainFrame.Visible = true
+                minimizeBtn.Visible = false
+            else
+                screenGui.Enabled = not screenGui.Enabled
+            end
+        end
+ 
+        if input.KeyCode == Keybinds.SafeZone then
+            task.spawn(flyToCoords)
+        end
+ 
+        if input.KeyCode == Keybinds.Killswitch then
+            killswitch()
+        end
+ 
+        if input.KeyCode == Keybinds.Fly then
+            toggleFly()
+        end
+    end)
+ 
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print("✅ OXRP09 - GELADEN!")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+end
+ 
+-- ===========================================
+-- START
+-- ===========================================
+checkKeyWithBot()
