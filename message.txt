@@ -660,7 +660,7 @@ local function switchTab(tabName)
     if tabName == "Movement" then
         -- Jump Boost Toggle
         local jumpBtn = Instance.new("TextButton")
-        jumpBtn.Parent = contentContainer
+      --  jumpBtn.Parent = contentContainer
         jumpBtn.BackgroundColor3 = Features.JumpBoost and colors.tabRed or colors.medium
         jumpBtn.BorderSizePixel = 0
         jumpBtn.Size = UDim2.new(0, 450, 0, 40)
@@ -1052,3 +1052,4 @@ uis.InputBegan:Connect(function(input, gameProcessed)
         toggleFly()
     end
 end)
+
