@@ -31,7 +31,7 @@ local Features = {
 
 -- Jump Boost Variablen
 local jumpPowerValue = 100
---local jumpSliderDragging = false
+local jumpSliderDragging = false
 
 -- Fly Variablen
 local flying = false
@@ -39,7 +39,7 @@ local flySpeed = 100
 local flyConnection = nil
 local flyBodyVelocity = nil
 local flyBodyGyro = nil
---local flySliderDragging = false
+local flySliderDragging = false
 
 -- ===========================================
 -- VIP BYPASS (OPTIMIERT)
@@ -79,8 +79,8 @@ end)
 -- ===========================================
 -- SAFE ZONE TELEPORT
 -- ===========================================
-local FlyConn = nil
-local IsFlying = false
+local SafeZoneFlyConn = nil
+local IsSafeZoneFlying = false
 local NoclipConn = nil
 
 local TARGET_POS = Vector3.new(110.0, 3.2 + 5, 150.7)
@@ -115,11 +115,11 @@ local function disableNoclip()
     end
 end
 
-local function stopFly()
-    IsFlying = false
-    if FlyConn then
-        FlyConn:Disconnect()
-        FlyConn = nil
+local function stopSafeZoneFly()
+    IsSafeZoneFlying = false
+    if SafeZoneFlyConn then
+        SafeZoneFlyConn:Disconnect()
+        SafeZoneFlyConn = nil
     end
     disableNoclip()
     local char = player.Character
@@ -136,8 +136,8 @@ local function stopFly()
 end
 
 local function flyToCoords()
-    if IsFlying then
-        stopFly()
+    if IsSafeZoneFlying then
+        stopSafeZoneFly()
         task.wait(0.1)
     end
 
@@ -155,14 +155,14 @@ local function flyToCoords()
     hum.JumpPower = 50
 
     enableNoclip()
-    IsFlying = true
+    IsSafeZoneFlying = true
 
     local dist = (hrp.Position - TARGET_POS).Magnitude
     if dist < 40 then
         disableNoclip()
         hrp.CFrame = TARGET_CFRAME
         task.wait(0.15)
-        stopFly()
+        stopSafeZoneFly()
         hum.WalkSpeed = oldWalk
         hum.JumpPower = oldJump
         return
@@ -175,8 +175,8 @@ local function flyToCoords()
     local phase = 1
     local phaseTime = 0
 
-    FlyConn = runService.RenderStepped:Connect(function(dt)
-        if not IsFlying or not hrp.Parent then return end
+    SafeZoneFlyConn = runService.RenderStepped:Connect(function(dt)
+        if not IsSafeZoneFlying or not hrp.Parent then return end
 
         phaseTime = phaseTime + dt
 
@@ -196,13 +196,13 @@ local function flyToCoords()
             if alpha2 >= 0.999 then
                 hrp.CFrame = TARGET_CFRAME
                 hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-                IsFlying = false
-                if FlyConn then
-                    FlyConn:Disconnect()
-                    FlyConn = nil
+                IsSafeZoneFlying = false
+                if SafeZoneFlyConn then
+                    SafeZoneFlyConn:Disconnect()
+                    SafeZoneFlyConn = nil
                 end
                 task.wait(0.1)
-                stopFly()
+                stopSafeZoneFly()
                 hum.WalkSpeed = oldWalk
                 hum.JumpPower = oldJump
                 return
@@ -238,7 +238,7 @@ local function startFly()
     flying = true
     
     flyConnection = runService.Heartbeat:Connect(function()
-        if not player.Character or not root then return end
+        if not player.Character or not root or not root.Parent then return end
         
         local moveDirection = Vector3.new(0, 0, 0)
         local speed = flySpeed
@@ -262,7 +262,7 @@ local function startFly()
             moveDirection = moveDirection - Vector3.new(0, speed, 0)
         end
         if uis:IsKeyDown(Enum.KeyCode.LeftShift) then
-            moveDirection = moveDirection * 5
+            moveDirection = moveDirection * 3
         end
         
         flyBodyVelocity.Velocity = moveDirection
@@ -324,8 +324,8 @@ uis.InputBegan:Connect(function(input, gameProcessed)
     if input.KeyCode == Enum.KeyCode.Space and Features.InfinityJump then
         if player.Character then
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid:ChangeState("Jumping")
+            if humanoid and humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end
     end
@@ -411,7 +411,7 @@ game.DescendantAdded:Connect(function(obj)
 end)
 
 -- ===========================================
--- GUI MIT SLIDERN
+-- GUI MIT SLIDERN (KORRIGIERT)
 -- ===========================================
 local screenGui = Instance.new("ScreenGui")
 local mainFrame = Instance.new("Frame")
@@ -530,6 +530,7 @@ contentContainer.Size = UDim2.new(0, 490, 0, 400)
 contentContainer.CanvasSize = UDim2.new(0, 0, 0, 800)
 contentContainer.ScrollBarThickness = 6
 contentContainer.ScrollBarImageColor3 = colors.medium
+contentContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local contentCorner = Instance.new("UICorner")
 contentCorner.CornerRadius = UDim.new(0, 6)
@@ -548,15 +549,16 @@ statusText.TextSize = 12
 statusText.TextXAlignment = Enum.TextXAlignment.Left
 
 -- ===========================================
--- SLIDER FUNKTION
+-- SLIDER FUNKTION (KORRIGIERT)
 -- ===========================================
---local function createSlider(parent, name, value, min, max, yPos, callback)
+local function createSlider(parent, name, value, min, max, yPos, callback)
     local frame = Instance.new("Frame")
     frame.Parent = parent
     frame.BackgroundColor3 = colors.medium
     frame.BorderSizePixel = 0
     frame.Position = UDim2.new(0, 20, 0, yPos)
     frame.Size = UDim2.new(0, 450, 0, 60)
+    frame.Name = name .. "Slider"
     
     local frameCorner = Instance.new("UICorner")
     frameCorner.CornerRadius = UDim.new(0, 6)
@@ -584,32 +586,35 @@ statusText.TextXAlignment = Enum.TextXAlignment.Left
     valueLabel.TextSize = 16
     valueLabel.TextXAlignment = Enum.TextXAlignment.Right
     
-   -- local sliderBg = Instance.new("Frame")
-   -- sliderBg.Parent = frame
-    --sliderBg.BackgroundColor3 = colors.light
-   -- sliderBg.Size = UDim2.new(0, 400, 0, 4)
-   -- sliderBg.Position = UDim2.new(0, 15, 0, 35)
-   -- sliderBg.BorderSizePixel = 0
+    local sliderBg = Instance.new("Frame")
+    sliderBg.Parent = frame
+    sliderBg.BackgroundColor3 = colors.light
+    sliderBg.Size = UDim2.new(0, 400, 0, 4)
+    sliderBg.Position = UDim2.new(0, 15, 0, 35)
+    sliderBg.BorderSizePixel = 0
     
-    --local sliderBgCorner = Instance.new("UICorner")
-    --sliderBgCorner.CornerRadius = UDim.new(1, 0)
-   -- sliderBgCorner.Parent = sliderBg
+    local sliderBgCorner = Instance.new("UICorner")
+    sliderBgCorner.CornerRadius = UDim.new(1, 0)
+    sliderBgCorner.Parent = sliderBg
     
-   -- local sliderButton = Instance.new("TextButton")
-   -- sliderButton.Parent = sliderBg
-   -- sliderButton.BackgroundColor3 = colors.tabRed
-   -- sliderButton.Size = UDim2.new(0, 16, 0, 16)
-   -- sliderButton.Position = UDim2.new((value - min) / (max - min), -8, 0.5, -8)
-   -- sliderButton.Text = ""
-   -- sliderButton.BorderSizePixel = 0
+    local sliderButton = Instance.new("TextButton")
+    sliderButton.Parent = sliderBg
+    sliderButton.BackgroundColor3 = colors.tabRed
+    sliderButton.Size = UDim2.new(0, 16, 0, 16)
+    sliderButton.Position = UDim2.new((value - min) / (max - min), -8, 0.5, -8)
+    sliderButton.Text = ""
+    sliderButton.BorderSizePixel = 0
+    sliderButton.AutoButtonColor = false
     
-   -- local sliderBtnCorner = Instance.new("UICorner")
-   -- sliderBtnCorner.CornerRadius = UDim.new(1, 0)
-   -- sliderBtnCorner.Parent = sliderButton
+    local sliderBtnCorner = Instance.new("UICorner")
+    sliderBtnCorner.CornerRadius = UDim.new(1, 0)
+    sliderBtnCorner.Parent = sliderButton
     
-   -- local dragging = false
+    local dragging = false
+    local currentValue = value
     
-    --sliderButton.MouseButton1Down:Connect(function()
+    -- Maus-Events
+    sliderButton.MouseButton1Down:Connect(function()
         dragging = true
     end)
     
@@ -619,22 +624,27 @@ statusText.TextXAlignment = Enum.TextXAlignment.Left
         end
     end)
     
-    uis.InputChanged:Connect(function(input)
+    local connection
+    connection = uis.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local mousePos = uis:GetMouseLocation()
-         --   local sliderPos = sliderBg.AbsolutePosition.X
-         --   local sliderSize = sliderBg.AbsoluteSize.X
+            local sliderPos = sliderBg.AbsolutePosition.X
+            local sliderSize = sliderBg.AbsoluteSize.X
             
-         --   local relativeX = math.clamp(mousePos.X - sliderPos, 0, sliderSize)
-           -- local percent = relativeX / sliderSize
+            local relativeX = math.clamp(mousePos.X - sliderPos, 0, sliderSize)
+            local percent = relativeX / sliderSize
             
             local newValue = math.floor(min + (percent * (max - min)))
-            value = newValue
-            label.Text = name .. ": " .. newValue
-            valueLabel.Text = newValue
-          --  sliderButton.Position = UDim2.new(percent, -8, 0.5, -8)
+            newValue = math.clamp(newValue, min, max)
             
-            callback(newValue)
+            if newValue ~= currentValue then
+                currentValue = newValue
+                label.Text = name .. ": " .. newValue
+                valueLabel.Text = newValue
+                sliderButton.Position = UDim2.new(percent, -8, 0.5, -8)
+                
+                callback(newValue)
+            end
         end
     end)
     
@@ -645,22 +655,24 @@ end
 -- TABS
 -- ===========================================
 local tabs = {"Movement", "Player", "Fly", "Social", "Keybinds"}
-local tabY = 50
+local tabY = 10
 local contentY = 10
 
-local function switchTab(tabName)
-    activeTab = tabName
-    
+local function clearContentContainer()
     for _, child in pairs(contentContainer:GetChildren()) do
         child:Destroy()
     end
-    
     contentY = 10
+end
+
+local function switchTab(tabName)
+    activeTab = tabName
+    clearContentContainer()
     
     if tabName == "Movement" then
         -- Jump Boost Toggle
         local jumpBtn = Instance.new("TextButton")
-      --  jumpBtn.Parent = contentContainer
+        jumpBtn.Parent = contentContainer
         jumpBtn.BackgroundColor3 = Features.JumpBoost and colors.tabRed or colors.medium
         jumpBtn.BorderSizePixel = 0
         jumpBtn.Size = UDim2.new(0, 450, 0, 40)
@@ -683,9 +695,9 @@ local function switchTab(tabName)
         contentY = contentY + 50
         
         -- Jump Power Slider
-       -- createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, contentY, function(value)
-        --    jumpPowerValue = value
-       -- end)
+        createSlider(contentContainer, "Jump Power", jumpPowerValue, 50, 200, contentY, function(value)
+            jumpPowerValue = value
+        end)
         
         contentY = contentY + 70
         
@@ -840,9 +852,9 @@ local function switchTab(tabName)
         contentY = contentY + 50
         
         -- Fly Speed Slider
-      --  createSlider(contentContainer, "Fly Speed", flySpeed, 10, 1000, contentY, function(value)
-         --   flySpeed = value
-       -- end)
+        createSlider(contentContainer, "Fly Speed", flySpeed, 10, 500, contentY, function(value)
+            flySpeed = value
+        end)
         
         contentY = contentY + 70
         
@@ -852,11 +864,12 @@ local function switchTab(tabName)
         infoText.BackgroundTransparency = 1
         infoText.Size = UDim2.new(0, 450, 0, 60)
         infoText.Position = UDim2.new(0, 20, 0, contentY)
-        infoText.Text = "W/S = Vor/Zurück\nA/D = Links/Rechts\nSpace/Ctrl = Auf/Ab\nShift = 5x Speed"
+        infoText.Text = "W/S = Vor/Zurück\nA/D = Links/Rechts\nSpace/Ctrl = Auf/Ab\nShift = 3x Speed"
         infoText.TextColor3 = colors.textDim
         infoText.Font = Enum.Font.Gotham
         infoText.TextSize = 12
         infoText.TextWrapped = true
+        infoText.TextXAlignment = Enum.TextXAlignment.Left
         
         contentY = contentY + 70
         
@@ -939,7 +952,7 @@ local function switchTab(tabName)
             {"Killswitch", "F6"},
             {"Fly Toggle", "F"},
             {"Fly Boost", "Shift"},
-            {"Infinity Jump", "Space"}
+            {"Infinity Jump", "Space (hold)"}
         }
         
         for _, bind in ipairs(binds) do
@@ -968,8 +981,8 @@ local function switchTab(tabName)
             local bindKey = Instance.new("TextLabel")
             bindKey.Parent = bindFrame
             bindKey.BackgroundColor3 = colors.light
-            bindKey.Size = UDim2.new(0, 80, 0, 25)
-            bindKey.Position = UDim2.new(1, -100, 0, 5)
+            bindKey.Size = UDim2.new(0, 100, 0, 25)
+            bindKey.Position = UDim2.new(1, -115, 0, 5)
             bindKey.Text = bind[2]
             bindKey.TextColor3 = colors.tabRed
             bindKey.Font = Enum.Font.GothamBold
@@ -1052,4 +1065,3 @@ uis.InputBegan:Connect(function(input, gameProcessed)
         toggleFly()
     end
 end)
-
